@@ -1,0 +1,18 @@
+# Mistral Vibe Code plugin hooks.
+#
+# Vibe loads this file because plugin.json declares the "ai.mistral.vibe"
+# extension, and runs each hook in the session's pinned copy of the plugin
+# with PLUGIN_ROOT set. The session_start hook injects the using-superpowers
+# bootstrap into the model's context at the start of every session (startup,
+# resume, /clear, and fork all re-inject).
+#
+# The command runs the repo's cross-platform polyglot wrapper, which locates
+# bash (or falls back to zsh/sh) and runs hooks/session-start. session-start
+# detects PLUGIN_ROOT and emits the hook_specific_output.additional_context
+# JSON shape that Vibe's session_start event consumes.
+
+[[hooks]]
+name = "superpowers-session-start"
+type = "session_start"
+command = '"$PLUGIN_ROOT/hooks/run-hook.cmd" session-start'
+description = "Inject the Superpowers using-superpowers bootstrap at session start."

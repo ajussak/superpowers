@@ -55,6 +55,8 @@ session_context="<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n**Below is the 
 # Claude Code reads BOTH additional_context and hookSpecificOutput without
 # deduplication, so we must emit only the field the current platform consumes.
 # Muse sets MUSE_PLUGIN_ROOT and expects additionalContext (SDK standard).
+# Mistral Vibe Code sets PLUGIN_ROOT for plugin hooks (ai.mistral.vibe/hooks.toml)
+# and expects hook_specific_output.additional_context (nested, snake_case).
 #
 # Uses printf instead of heredoc to work around bash 5.3+ heredoc hang.
 # See: https://github.com/obra/superpowers/issues/571
@@ -82,6 +84,9 @@ elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ] && [ -z "${MU
 elif [ -n "${MUSE_PLUGIN_ROOT:-}" ]; then
   # Muse sets MUSE_PLUGIN_ROOT — try Claude-style nested output for Muse Spark
   emit_json '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+elif [ -n "${PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  # Mistral Vibe Code sets PLUGIN_ROOT for plugin hooks
+  emit_json '{\n  "hook_specific_output": {\n    "additional_context": "%s"\n  }\n}\n' "$session_context"
 else
   # Copilot CLI (sets COPILOT_CLI=1) or unknown platform — SDK standard format
   emit_json '{\n  "additionalContext": "%s"\n}\n' "$session_context"

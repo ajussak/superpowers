@@ -111,6 +111,21 @@ if (shape === "nested") {
     fail("sdk output included additional_context");
   }
   context = payload.additionalContext;
+} else if (shape === "vibe") {
+  if (hasOwn(payload, "hookSpecificOutput")) {
+    fail("vibe output included hookSpecificOutput");
+  }
+  if (hasOwn(payload, "additional_context") || hasOwn(payload, "additionalContext")) {
+    fail("vibe output included a top-level context field");
+  }
+  if (!hasOwn(payload, "hook_specific_output")) {
+    fail("vibe output missing hook_specific_output");
+  }
+  const hookOutput = payload.hook_specific_output;
+  if (!hookOutput || typeof hookOutput !== "object" || Array.isArray(hookOutput)) {
+    fail("hook_specific_output is not an object");
+  }
+  context = hookOutput.additional_context;
 } else {
   fail(`unknown expected shape: ${shape}`);
 }
@@ -219,6 +234,26 @@ assert_command_output \
     COPILOT_CLI=1 \
     CLAUDE_PLUGIN_ROOT="$REPO_ROOT" \
     bash "$HOOK_UNDER_TEST"
+
+vibe_home="$(make_home vibe)"
+assert_command_output \
+    "Mistral Vibe Code emits nested hook_specific_output.additional_context only" \
+    "vibe" \
+    "You have superpowers." \
+    "" \
+    "$vibe_home" \
+    PLUGIN_ROOT="$REPO_ROOT" \
+    bash "$HOOK_UNDER_TEST"
+
+vibe_wrapper_home="$(make_home vibe-wrapper)"
+assert_command_output \
+    "Vibe plugin hook via run-hook.cmd emits nested hook_specific_output.additional_context" \
+    "vibe" \
+    "You have superpowers." \
+    "" \
+    "$vibe_wrapper_home" \
+    PLUGIN_ROOT="$REPO_ROOT" \
+    bash "$WRAPPER_UNDER_TEST" session-start
 
 legacy_home="$(make_home legacy-warning-removed)"
 mkdir -p "$legacy_home/.config/superpowers/skills"
