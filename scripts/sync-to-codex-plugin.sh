@@ -61,6 +61,7 @@ EXCLUDES=(
   "/.pre-commit-config.yaml"
   "/.version-bump.json"
   "/.worktrees/"
+  "/ai.mistral.vibe/"
   ".DS_Store"
 
   # Root ceremony files
@@ -72,6 +73,7 @@ EXCLUDES=(
   "/gemini-extension.json"
   "/index.js"
   "/package.json"
+  "/plugin.json"
 
   # Directories not shipped by canonical Codex plugins
   "/commands/"

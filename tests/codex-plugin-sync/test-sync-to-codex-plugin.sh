@@ -178,6 +178,7 @@ write_upstream_fixture() {
         "$repo/.codex-plugin" \
         "$repo/.kimi-plugin" \
         "$repo/.private-journal" \
+        "$repo/ai.mistral.vibe" \
         "$repo/assets" \
         "$repo/evals/drill" \
         "$repo/hooks" \
@@ -247,6 +248,20 @@ EOF
   "name": "superpowers",
   "version": "$MANIFEST_VERSION"
 }
+EOF
+
+    cat > "$repo/plugin.json" <<EOF
+{
+  "name": "superpowers",
+  "version": "$MANIFEST_VERSION"
+}
+EOF
+
+    cat > "$repo/ai.mistral.vibe/hooks.toml" <<'EOF'
+[[hooks]]
+name = "superpowers-session-start"
+type = "session_start"
+command = '"$PLUGIN_ROOT/hooks/run-hook.cmd" session-start'
 EOF
 
     printf 'antigravity png fixture\n' > "$repo/assets/antigravity-logo.png"
@@ -693,6 +708,8 @@ main() {
     assert_contains "$preview_section" ".codex-plugin/plugin.json" "Preview includes manifest path"
     assert_not_contains "$preview_section" ".kimi-plugin/plugin.json" "Preview excludes Kimi manifest from Codex sync"
     assert_not_contains "$preview_section" ".antigravity-plugin/plugin.json" "Preview excludes Antigravity manifest from Codex sync"
+    assert_not_contains "$preview_section" " plugin.json" "Preview excludes root Vibe plugin.json from Codex sync"
+    assert_not_contains "$preview_section" "ai.mistral.vibe" "Preview excludes Vibe plugin hooks from Codex sync"
     assert_not_contains "$preview_section" "assets/antigravity-logo.png" "Preview excludes Antigravity logo from Codex sync"
     assert_contains "$preview_section" "assets/superpowers-small.svg" "Preview includes SVG asset"
     assert_contains "$preview_section" "assets/app-icon.png" "Preview includes PNG asset"

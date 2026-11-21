@@ -23,6 +23,7 @@ Superpowers is a complete software development methodology for your coding agent
   - [Qwen Code](#qwen-code)
   - [Hermes Agent](#hermes-agent)
   - [Muse](#muse)
+  - [Mistral Vibe Code](#mistral-vibe-code)
 - [The Basic Workflow](#the-basic-workflow)
 - [When Something Goes Wrong](#when-something-goes-wrong)
 - [Community](#community)
@@ -304,6 +305,31 @@ Superpowers is available as a native Muse plugin — same repo, same skills, all
   ```
 
 Restart any active Muse sessions after installing so the `SessionStart` hook takes effect — skills are active immediately, hooks require approval on first install. To verify, start a fresh session and send `Let's make a react todo list` — a working install auto-triggers `brainstorming` before any code is written. Version is tracked in `.version-bump.json` so `scripts/bump-version.sh` keeps it in sync.
+
+### Mistral Vibe Code
+
+Superpowers is a native [Agent Plugins 1.0](https://agent-plugins.org) plugin for [Mistral Vibe Code](https://github.com/mistralai/mistral-vibe) — this repository is itself the plugin (root `plugin.json`).
+
+- Install into Vibe's user plugin directory from this repository:
+
+  ```bash
+  git clone https://github.com/obra/superpowers.git ~/.vibe/plugins/superpowers
+  ```
+
+  For a single project instead, clone into `./.vibe/plugins/superpowers` and trust the folder when Vibe asks.
+
+- Start a fresh session (or run `/reload-plugins` in a running one) and check `/plugins` lists `superpowers`. Skills are exposed as `superpowers:<skill-name>`, and the plugin's `session_start` hook (`ai.mistral.vibe/hooks.toml`) injects the `using-superpowers` bootstrap at the start of every session — no per-session opt-in.
+
+- Update later:
+
+  ```bash
+  git -C ~/.vibe/plugins/superpowers pull
+  ```
+
+  then `/reload-plugins` or start a new session.
+
+- To verify, start a fresh session and send `Let's make a react todo list` — a working install auto-triggers `brainstorming` before any code is written.
+- Detailed docs: [docs/README.vibe.md](docs/README.vibe.md)
 
 ## The Basic Workflow
 
